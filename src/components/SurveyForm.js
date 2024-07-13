@@ -98,9 +98,14 @@ const SurveyForm = () => {
     event.preventDefault();
     console.log("Form submitted with data:", formData);
     setSubmitted(true);
-    // Export to Excel only when form is submitted
-    if (submitted) {
+    // Check if all questions are answered
+    const answeredQuestions = Object.keys(formData).length;
+    if (answeredQuestions === questions.length) {
+      // Export to Excel only if all questions are answered
       exportToExcel(formData);
+    } else {
+      // Optionally, you can prevent submission or handle incomplete form state
+      console.error("Not all questions answered.");
     }
   };
 
@@ -178,7 +183,11 @@ const SurveyForm = () => {
                   Previous
                 </button>
                 {currentGroupIndex === totalPages - 1 ? (
-                  <button type="submit" className="btn btn-primary submit-button">
+                  <button
+                    type="submit"
+                    className="btn btn-primary submit-button"
+                    disabled={Object.keys(formData).length !== questions.length}
+                  >
                     Submit
                   </button>
                 ) : (
