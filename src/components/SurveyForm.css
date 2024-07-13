@@ -99,18 +99,58 @@ body {
     margin-right: 0.5rem;
 }
 
-.submit-button {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1.25rem;
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    background: #e4cd00; /* Adjusted background color */
     transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
-.submit-button:hover {
-    background: #a38b00;
+.btn-primary {
+    background-color: #e4cd00;
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #a38b00;
     transform: translateY(-5px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+    background-color: #333;
+    border: none;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #555;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation keyframes */
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
