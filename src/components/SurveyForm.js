@@ -169,34 +169,81 @@ const SurveyForm = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <img src={logo} alt="Logo" className="logo" />
-            <h1 className="form-title">Survey Form</h1>
-            <form onSubmit={handleSubmit}>
-              {renderQuestions()}
-              <div className="d-flex justify-content-between mt-4">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={prevGroup}
-                  disabled={currentGroupIndex === 0}
+            <motion.img
+              src={logo}
+              alt="Logo"
+              className="logo"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            />
+            <motion.h1
+              className="form-title"
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              Survey Form
+            </motion.h1>
+            {submitted ? (
+              <motion.p
+                className="form-submitted"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                Form Submitted!
+              </motion.p>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <motion.div
+                  key={currentGroupIndex}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  Previous
-                </button>
-                {currentGroupIndex === totalPages - 1 ? (
-                  <button
-                    type="submit"
-                    className="btn btn-primary submit-button"
-                    disabled={Object.keys(formData).length !== questions.length}
+                  {renderQuestions()}
+                </motion.div>
+                <motion.div
+                  className="d-flex justify-content-between mt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  <motion.button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={prevGroup}
+                    disabled={currentGroupIndex === 0}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    Submit
-                  </button>
-                ) : (
-                  <button type="button" className="btn btn-primary" onClick={nextGroup}>
-                    Next
-                  </button>
-                )}
-              </div>
-            </form>
+                    Previous
+                  </motion.button>
+                  {currentGroupIndex === totalPages - 1 ? (
+                    <motion.button
+                      type="submit"
+                      className="btn btn-primary submit-button"
+                      disabled={Object.keys(formData).length !== questions.length}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      Submit
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={nextGroup}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      Next
+                    </motion.button>
+                  )}
+                </motion.div>
+              </form>
+            )}
           </motion.div>
         </div>
       </div>

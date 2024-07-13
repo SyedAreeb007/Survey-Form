@@ -86,17 +86,25 @@ body {
     color: #333;
 }
 
-.form-group div {
+.form-group .form-check {
+    display: flex;
+    align-items: center;
     margin-bottom: 0.5rem;
+    cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.form-group div:hover {
-    transform: translateX(15px); /* Adjust as needed */
+.form-group .form-check:hover {
+    transform: translateX(10px);
 }
 
-.form-group input {
+.form-group .form-check-input {
     margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.form-group .form-check-label {
+    cursor: pointer;
 }
 
 .btn {
