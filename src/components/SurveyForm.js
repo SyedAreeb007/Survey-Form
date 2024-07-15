@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import * as XLSX from 'xlsx';
 import './SurveyForm.css';
 import logo from '../Assets/Images/logo.png';
 
@@ -94,19 +93,38 @@ const SurveyForm = () => {
     }));
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
     console.log("Form submitted with data:", formData);
     setSubmitted(true);
-    // Check if all questions are answered
-    const answeredQuestions = Object.keys(formData).length;
-    if (answeredQuestions === questions.length) {
-      // Export to Excel only if all questions are answered
-      exportToExcel(formData);
-    } else {
-      // Optionally, you can prevent submission or handle incomplete form state
-      console.error("Not all questions answered.");
+
+    // Store data in database
+    try {
+      await storeFormData(); // Updated to store the entire formData object
+      console.log("Form data stored in database successfully.");
+    } catch (error) {
+      console.error("Failed to store form data in database:", error);
     }
+  };
+
+  const storeFormData = async () => {
+    const response = await fetch('http://localhost:5000/storeFormData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        contact: formData.contact,
+        responses: questions.map((question, index) => ({
+          Question: question.text,
+          Answer: formData[`q${index}`]
+        }))
+      })
+    });
+    const result = await response.json();
+    return result;
   };
 
   useEffect(() => {
@@ -136,26 +154,13 @@ const SurveyForm = () => {
               value={option}
               className="form-check-input"
               onChange={handleInputChange}
+              required
             />
             <label htmlFor={`${startIndex + index}-${i}`} className="form-check-label">{option}</label>
           </div>
         ))}
       </motion.div>
     ));
-  };
-
-  const exportToExcel = data => {
-    const exportData = Object.entries(data).map(([question, answer]) => ({
-      Question: question,
-      Answer: answer
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Survey Responses");
-
-    // Generate a download link for the Excel file
-    XLSX.writeFile(wb, "survey_responses.xlsx");
   };
 
   return (
@@ -196,52 +201,77 @@ const SurveyForm = () => {
               </motion.p>
             ) : (
               <form onSubmit={handleSubmit}>
-                <motion.div
-                  key={currentGroupIndex}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {renderQuestions()}
-                </motion.div>
-                <motion.div
-                  className="d-flex justify-content-between mt-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                >
-                  <motion.button
+                {currentGroupIndex === 0 && (
+                  <motion.div
+                    key="personal-info"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="form-group">
+                      <label htmlFor="name">Your Name:</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        className="form-control"
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="email">Email:</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        className="form-control"
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="contact">Contact:</label>
+                      <input
+                        type="tel"
+                        id="contact"
+                        name="contact"
+                        className="form-control"
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                  </motion.div>
+                )}
+                {renderQuestions()}
+                <div className="d-flex justify-content-between mt-4">
+                  <button
                     type="button"
-                    className="btn btn-primary"
+                    className="btn btn-secondary"
                     onClick={prevGroup}
                     disabled={currentGroupIndex === 0}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
                   >
                     Previous
-                  </motion.button>
-                  {currentGroupIndex === totalPages - 1 ? (
+                  </button>
+                  {currentGroupIndex < totalPages - 1 ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={nextGroup}
+                    >
+                      Next
+                    </button>
+                  ) : (
                     <motion.button
                       type="submit"
-                      className="btn btn-primary submit-button"
-                      disabled={Object.keys(formData).length !== questions.length}
+                      className="btn btn-success"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
                       Submit
                     </motion.button>
-                  ) : (
-                    <motion.button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={nextGroup}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      Next
-                    </motion.button>
                   )}
-                </motion.div>
+                </div>
               </form>
             )}
           </motion.div>
